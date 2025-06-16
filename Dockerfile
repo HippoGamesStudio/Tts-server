@@ -1,28 +1,27 @@
-FROM node:18
+FROM python:3.10-slim
 
-# Установим системные зависимости
+# Установка системных библиотек, необходимых для TTS
 RUN apt-get update && apt-get install -y \
-    python3-pip \
+    git \
     ffmpeg \
     espeak-ng \
     libsndfile1 \
-    git \
     build-essential \
+    libatlas-base-dev \
+    libportaudio2 \
+    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем requirements
+# Копируем requirements.txt
 COPY requirements.txt .
 
-# Устанавливаем Python зависимости
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+# Устанавливаем Python-зависимости
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
-# Копируем Node.js код
+# Копируем код
+COPY . /app
 WORKDIR /app
-COPY . .
 
-# Устанавливаем Node.js зависимости
-RUN npm install
-
-# Стартуем сервер
-CMD ["npm", "start"]
+# Запускаем сервер (предполагается, что у тебя есть app.py или index.js)
+CMD ["python", "app.py"]
